@@ -144,7 +144,7 @@ h2 {
 }
 
 /* Модальное окно оплаты */
-.hidden {
+.modal-overlay.hidden {
     display: none;
 }
 .modal-overlay {
