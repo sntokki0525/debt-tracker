@@ -1,95 +1,283 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Debt Tracker</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>🌱 Debt Tracker</title>
+
+  <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
-    <div class="container">
-        <header>
-            <button id="themeToggle" class="theme-toggle">🌙</button>
-            <h1>💸 Debt Tracker</h1>
-            <p>Мой путь к финансовой свободе</p>
-        </header>
-        <section class="summary">
-            <div class="card">
-                <h3>Общий долг</h3>
-                <span id="totalDebt">0 ₽</span>
-            </div>
-            <div class="card">
-                <h3>Закрыто</h3>
-                <span id="paidDebt">0 ₽</span>
-            </div>
-            <div class="card">
-                <h3>Осталось</h3>
-                <span id="remainingDebt">0 ₽</span>
-            </div>
-        </section>
-        <section>
-            <h2>🎯 Следующая цель</h2>
-            <div class="goal-card">
-                <h3 id="goalName"></h3>
-                <p id="goalText"></p>
-                <div class="progress-bar">
-                    <div id="progressFill" class="progress-fill">
-                        <span id="progressLabel" class="progress-label"></span>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section>
-            <div class="section-header">
-                <h2>💳 Мои долги</h2>
-                <button id="addDebtBtn" class="add-btn">+ Добавить долг</button>
-            </div>
-            <div id="debtsContainer"></div>
-        </section>
-        <section>
-            <h2>📊 График снижения долга</h2>
-            <div class="chart-card">
-                <canvas id="debtChart"></canvas>
-            </div>
-        </section>
-        <section>
-            <div class="history-header">
-                <h2>🧾 История платежей</h2>
-                <button id="undoBtn" class="undo-btn hidden">↩️ Отменить последний платёж</button>
-            </div>
-            <div id="historyContainer"></div>
-        </section>
+
+<div class="container">
+
+  <!-- ================= HEADER ================= -->
+
+  <header class="header">
+
+    <div>
+      <h1>🌱 Debt Tracker</h1>
+      <p>Путь к финансовой свободе</p>
     </div>
 
-    <div id="payModal" class="modal-overlay hidden">
-        <div class="modal">
-            <h3 id="modalDebtName"></h3>
-            <p>Введите сумму платежа</p>
-            <input type="number" id="paymentInput" placeholder="10000">
-            <div class="modal-buttons">
-                <button id="cancelPay" class="btn-secondary">Отмена</button>
-                <button id="confirmPay" class="btn-primary">Оплатить</button>
-            </div>
+    <button id="themeToggle" class="theme-toggle">
+      🌙
+    </button>
+
+  </header>
+
+  <!-- ================= HERO ================= -->
+
+  <section class="hero-grid">
+
+    <div class="hero-card success">
+
+      <span>💰 Можно потратить</span>
+
+      <h2 id="availableMoney">
+        0 ₽
+      </h2>
+
+    </div>
+
+    <div class="hero-card warning">
+
+      <span>🔒 Зарезервировано</span>
+
+      <h2 id="reservedMoney">
+        45 500 ₽
+      </h2>
+
+    </div>
+
+    <div class="hero-card">
+
+      <span>📅 До зарплаты</span>
+
+      <h2 id="daysUntilSalary">
+        --
+      </h2>
+
+    </div>
+
+    <div class="hero-card">
+
+      <span>🎯 Сейчас закрываем</span>
+
+      <h2 id="currentTarget">
+        —
+      </h2>
+
+    </div>
+
+  </section>
+
+  <!-- ================= SUMMARY ================= -->
+
+  <section class="summary">
+
+    <div class="card">
+
+      <h3>💳 Общий долг</h3>
+
+      <span id="totalDebt">0 ₽</span>
+
+    </div>
+
+    <div class="card">
+
+      <h3>✅ Погашено</h3>
+
+      <span id="paidDebt">0 ₽</span>
+
+    </div>
+
+    <div class="card">
+
+      <h3>📉 Осталось</h3>
+
+      <span id="remainingDebt">0 ₽</span>
+
+    </div>
+
+  </section>
+
+  <!-- ================= GOAL ================= -->
+
+  <section>
+
+    <h2>🎯 Следующая цель</h2>
+
+    <div class="goal-card">
+
+      <h3 id="goalName"></h3>
+
+      <p id="goalText"></p>
+
+      <div class="progress-bar">
+
+        <div id="progressFill" class="progress-fill">
+
+          <span id="progressLabel" class="progress-label"></span>
+
         </div>
+
+      </div>
+
     </div>
 
-    <div id="addDebtModal" class="modal-overlay hidden">
-        <div class="modal">
-            <h3>Новый долг</h3>
-            <input type="text" id="newDebtName" placeholder="Название (например, Тинькофф)">
-            <input type="number" id="newDebtAmount" placeholder="Сумма долга">
-            <input type="number" id="newDebtRate" placeholder="Ставка, % (необязательно)">
-            <input type="text" id="newDebtDeadline" placeholder="Дедлайн, например 31 августа (необязательно)">
-            <div class="modal-buttons">
-                <button id="cancelAddDebt" class="btn-secondary">Отмена</button>
-                <button id="confirmAddDebt" class="btn-primary">Добавить</button>
-            </div>
-        </div>
+  </section>
+
+  <!-- ================= DEBTS ================= -->
+
+  <section>
+
+    <div class="section-header">
+
+      <h2>💳 Мои долги</h2>
+
+      <button id="addDebtBtn" class="add-btn">
+
+        + Добавить
+
+      </button>
+
     </div>
 
-    <div id="toast" class="toast hidden"></div>
+    <div id="debtsContainer"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="script.js"></script>
+  </section>
+
+  <!-- ================= CHART ================= -->
+
+  <section>
+
+    <h2>📈 Прогресс</h2>
+
+    <div class="chart-card">
+
+      <canvas id="debtChart"></canvas>
+
+    </div>
+
+  </section>
+
+  <!-- ================= HISTORY ================= -->
+
+  <section>
+
+    <div class="history-header">
+
+      <h2>🧾 История платежей</h2>
+
+      <button id="undoBtn" class="undo-btn hidden">
+
+        ↩️ Отменить
+
+      </button>
+
+    </div>
+
+    <div id="historyContainer"></div>
+
+  </section>
+
+</div>
+
+<!-- ================= PAYMENT MODAL ================= -->
+
+<div id="payModal" class="modal-overlay hidden">
+
+  <div class="modal">
+
+    <h3 id="modalDebtName"></h3>
+
+    <p>Введите сумму платежа</p>
+
+    <input
+      id="paymentInput"
+      type="number"
+      placeholder="10000"
+    >
+
+    <div class="modal-buttons">
+
+      <button id="cancelPay" class="btn-secondary">
+
+        Отмена
+
+      </button>
+
+      <button id="confirmPay" class="btn-primary">
+
+        Оплатить
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= ADD DEBT ================= -->
+
+<div id="addDebtModal" class="modal-overlay hidden">
+
+  <div class="modal">
+
+    <h3>Новый долг</h3>
+
+    <input
+      id="newDebtName"
+      type="text"
+      placeholder="Название"
+    >
+
+    <input
+      id="newDebtAmount"
+      type="number"
+      placeholder="Сумма"
+    >
+
+    <input
+      id="newDebtRate"
+      type="number"
+      placeholder="Процент"
+    >
+
+    <input
+      id="newDebtDeadline"
+      type="text"
+      placeholder="Дата"
+    >
+
+    <div class="modal-buttons">
+
+      <button id="cancelAddDebt" class="btn-secondary">
+
+        Отмена
+
+      </button>
+
+      <button id="confirmAddDebt" class="btn-primary">
+
+        Добавить
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
+
 </body>
 </html>
