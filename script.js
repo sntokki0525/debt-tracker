@@ -33,6 +33,7 @@ function saveState() {
 
 let state = loadState();
 let currentDebtId = null;
+let debtChartInstance = null;
 
 function formatMoney(value) {
     return Math.round(value).toLocaleString("ru-RU") + " ₽";
@@ -103,6 +104,72 @@ function render() {
     });
 
     renderHistory();
+    renderChart();
+}
+
+function renderChart() {
+    const canvas = document.getElementById("debtChart");
+    if (!canvas || typeof Chart === "undefined") return;
+
+    const originalTotal = getOriginalTotal();
+    const sortedPayments = state.payments
+        .slice()
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    const labels = ["Старт"];
+    const data = [originalTotal];
+    let running = originalTotal;
+
+    sortedPayments.forEach(p => {
+        running -= p.amount;
+        labels.push(formatDate(p.date));
+        data.push(running);
+    });
+
+    const isDark = document.body.classList.contains("dark");
+    const gridColor = isDark ? "rgba(255,255,255,.08)" : "rgba(0,0,0,.06)";
+    const textColor = isDark ? "#a9adc1" : "#666";
+
+    if (debtChartInstance) {
+        debtChartInstance.destroy();
+    }
+
+    debtChartInstance = new Chart(canvas, {
+        type: "line",
+        data: {
+            labels,
+            datasets: [{
+                label: "Остаток долга",
+                data,
+                borderColor: "#4f7cff",
+                backgroundColor: "rgba(79,124,255,.15)",
+                tension: 0.3,
+                fill: true,
+                pointRadius: 4,
+                pointBackgroundColor: "#4f7cff"
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    grid: { color: gridColor },
+                    ticks: { color: textColor }
+                },
+                y: {
+                    grid: { color: gridColor },
+                    ticks: {
+                        color: textColor,
+                        callback: value => formatMoney(value)
+                    }
+                }
+            }
+        }
+    });
 }
 
 function renderHistory() {
@@ -325,6 +392,7 @@ function toggleTheme() {
     const newTheme = isDark ? "light" : "dark";
     localStorage.setItem(THEME_KEY, newTheme);
     applyTheme(newTheme);
+    renderChart();
 }
 
 applyTheme(localStorage.getItem(THEME_KEY) || "light");
