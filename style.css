@@ -1,3 +1,39 @@
+:root {
+    --bg: #f5f7fb;
+    --text: #333;
+    --text-muted: #666;
+    --text-light: #777;
+    --card-bg: #ffffff;
+    --shadow: 0 8px 20px rgba(0,0,0,.08);
+    --border: #eee;
+    --input-border: #ddd;
+    --accent: #4f7cff;
+    --accent-2: #6dd5fa;
+    --progress-bg: #e9edf5;
+    --danger: #e0455c;
+    --secondary-bg: #eee;
+    --secondary-text: #333;
+    --empty-text: #999;
+}
+
+body.dark {
+    --bg: #14161f;
+    --text: #eaeaf0;
+    --text-muted: #a9adc1;
+    --text-light: #9296ab;
+    --card-bg: #1e2130;
+    --shadow: 0 8px 20px rgba(0,0,0,.35);
+    --border: #2b2f42;
+    --input-border: #3a3f56;
+    --accent: #6d8bff;
+    --accent-2: #6dd5fa;
+    --progress-bg: #2b2f42;
+    --danger: #ff6b7a;
+    --secondary-bg: #2b2f42;
+    --secondary-text: #eaeaf0;
+    --empty-text: #6a6e85;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -5,8 +41,9 @@
 }
 body {
     font-family: Arial, Helvetica, sans-serif;
-    background: #f5f7fb;
-    color: #333;
+    background: var(--bg);
+    color: var(--text);
+    transition: background .3s ease, color .3s ease;
 }
 .container {
     max-width: 1100px;
@@ -14,6 +51,7 @@ body {
     padding: 20px;
 }
 header {
+    position: relative;
     text-align: center;
     margin-bottom: 35px;
 }
@@ -22,7 +60,24 @@ header h1 {
     margin-bottom: 10px;
 }
 header p {
-    color: #666;
+    color: var(--text-muted);
+}
+.theme-toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: none;
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+    border-radius: 50%;
+    width: 46px;
+    height: 46px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: transform .2s ease;
+}
+.theme-toggle:hover {
+    transform: scale(1.08);
 }
 .summary {
     display: grid;
@@ -31,13 +86,13 @@ header p {
     margin-bottom: 40px;
 }
 .card {
-    background: white;
+    background: var(--card-bg);
     border-radius: 18px;
     padding: 25px;
-    box-shadow: 0 8px 20px rgba(0,0,0,.08);
+    box-shadow: var(--shadow);
 }
 .card h3 {
-    color: #777;
+    color: var(--text-light);
     margin-bottom: 12px;
 }
 .card span {
@@ -48,10 +103,10 @@ h2 {
     margin-bottom: 18px;
 }
 .goal-card {
-    background: white;
+    background: var(--card-bg);
     border-radius: 18px;
     padding: 24px;
-    box-shadow: 0 8px 20px rgba(0,0,0,.08);
+    box-shadow: var(--shadow);
     margin-bottom: 35px;
 }
 .goal-card h3 {
@@ -59,20 +114,20 @@ h2 {
     font-size: 24px;
 }
 .goal-card p {
-    color: #666;
+    color: var(--text-muted);
     margin-bottom: 18px;
 }
 .progress-bar {
     width: 100%;
     height: 18px;
-    background: #e9edf5;
+    background: var(--progress-bg);
     border-radius: 999px;
     overflow: hidden;
 }
 .progress-fill {
     width: 0%;
     height: 100%;
-    background: linear-gradient(90deg, #4f7cff, #6dd5fa);
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
     transition: width .5s ease;
 }
 #debtsContainer {
@@ -82,10 +137,10 @@ h2 {
     margin-bottom: 35px;
 }
 .debt-card {
-    background: white;
+    background: var(--card-bg);
     border-radius: 18px;
     padding: 20px;
-    box-shadow: 0 8px 20px rgba(0,0,0,.08);
+    box-shadow: var(--shadow);
 }
 .debt-card h3 {
     margin-bottom: 12px;
@@ -98,7 +153,7 @@ h2 {
 }
 .closed-label {
     margin-top: 15px;
-    color: #4f7cff;
+    color: var(--accent);
     font-weight: bold;
 }
 .pay-btn {
@@ -107,7 +162,7 @@ h2 {
     padding: 12px;
     border: none;
     border-radius: 12px;
-    background: #4f7cff;
+    background: var(--accent);
     color: white;
     font-size: 16px;
     cursor: pointer;
@@ -118,27 +173,51 @@ h2 {
 }
 
 /* История платежей */
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+.history-header h2 {
+    margin-bottom: 0;
+}
+.undo-btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 12px;
+    background: var(--secondary-bg);
+    color: var(--secondary-text);
+    font-size: 14px;
+    cursor: pointer;
+    transition: .2s;
+}
+.undo-btn:hover {
+    background: var(--danger);
+    color: white;
+}
 #historyContainer {
-    background: white;
+    background: var(--card-bg);
     border-radius: 18px;
-    box-shadow: 0 8px 20px rgba(0,0,0,.08);
+    box-shadow: var(--shadow);
     padding: 5px 20px;
 }
 .history-item {
     display: flex;
     justify-content: space-between;
     padding: 14px 0;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
 }
 .history-item:last-child {
     border-bottom: none;
 }
 .history-amount {
-    color: #e0455c;
+    color: var(--danger);
     font-weight: bold;
 }
 .empty-text {
-    color: #999;
+    color: var(--empty-text);
     text-align: center;
     padding: 20px 0;
 }
@@ -157,7 +236,7 @@ h2 {
     z-index: 999;
 }
 .modal {
-    background: white;
+    background: var(--card-bg);
     border-radius: 18px;
     padding: 28px;
     width: 90%;
@@ -166,18 +245,21 @@ h2 {
 }
 .modal h3 {
     margin-bottom: 6px;
+    color: var(--text);
 }
 .modal p {
-    color: #666;
+    color: var(--text-muted);
     margin-bottom: 14px;
 }
 #paymentInput {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--input-border);
     border-radius: 12px;
     font-size: 16px;
     margin-bottom: 18px;
+    background: var(--card-bg);
+    color: var(--text);
 }
 .modal-buttons {
     display: flex;
@@ -192,33 +274,10 @@ h2 {
     cursor: pointer;
 }
 .btn-secondary {
-    background: #eee;
-    color: #333;
+    background: var(--secondary-bg);
+    color: var(--secondary-text);
 }
 .btn-primary {
-    background: #4f7cff;
-    color: white;
-}
-.history-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 18px;
-}
-.history-header h2 {
-    margin-bottom: 0;
-}
-.undo-btn {
-    padding: 10px 16px;
-    border: none;
-    border-radius: 12px;
-    background: #eee;
-    color: #333;
-    font-size: 14px;
-    cursor: pointer;
-    transition: .2s;
-}
-.undo-btn:hover {
-    background: #e0455c;
+    background: var(--accent);
     color: white;
 }
