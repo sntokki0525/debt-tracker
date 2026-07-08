@@ -83,10 +83,15 @@ function render() {
 
 function renderHistory() {
     const historyContainer = document.getElementById("historyContainer");
+    const undoBtn = document.getElementById("undoBtn");
+
     if (state.payments.length === 0) {
         historyContainer.innerHTML = `<p class="empty-text">Платежей пока нет</p>`;
+        undoBtn.classList.add("hidden");
         return;
     }
+
+    undoBtn.classList.remove("hidden");
     historyContainer.innerHTML = state.payments
         .slice()
         .reverse()
@@ -129,6 +134,7 @@ function confirmPayment() {
     debt.amount -= paidAmount;
 
     state.payments.push({
+        debtId: debt.id,
         debtName: debt.name,
         amount: paidAmount,
         date: new Date().toISOString()
@@ -136,6 +142,20 @@ function confirmPayment() {
 
     saveState();
     closePayModal();
+    render();
+}
+
+function undoLastPayment() {
+    if (state.payments.length === 0) return;
+
+    const lastPayment = state.payments.pop();
+    const debt = state.debts.find(d => d.id === lastPayment.debtId);
+
+    if (debt) {
+        debt.amount += lastPayment.amount;
+    }
+
+    saveState();
     render();
 }
 
@@ -147,5 +167,6 @@ document.getElementById("payModal").addEventListener("click", (e) => {
 document.getElementById("paymentInput").addEventListener("keydown", (e) => {
     if (e.key === "Enter") confirmPayment();
 });
+document.getElementById("undoBtn").addEventListener("click", undoLastPayment);
 
 render();
