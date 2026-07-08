@@ -47,6 +47,12 @@
             <div id="debtsContainer"></div>
         </section>
         <section>
+            <h2>📊 График снижения долга</h2>
+            <div class="chart-card">
+                <canvas id="debtChart"></canvas>
+            </div>
+        </section>
+        <section>
             <div class="history-header">
                 <h2>🧾 История платежей</h2>
                 <button id="undoBtn" class="undo-btn hidden">↩️ Отменить последний платёж</button>
@@ -83,6 +89,7 @@
 
     <div id="toast" class="toast hidden"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
