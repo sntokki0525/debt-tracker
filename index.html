@@ -1,1 +1,69 @@
-<!-- Пока пусто -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debt Tracker</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <h1>💸 Debt Tracker</h1>
+            <p>Мой путь к финансовой свободе</p>
+        </header>
+
+        <section class="summary">
+
+            <div class="card">
+                <h3>Общий долг</h3>
+                <span id="totalDebt">0 ₽</span>
+            </div>
+
+            <div class="card">
+                <h3>Закрыто</h3>
+                <span id="paidDebt">0 ₽</span>
+            </div>
+
+            <div class="card">
+                <h3>Осталось</h3>
+                <span id="remainingDebt">0 ₽</span>
+            </div>
+
+        </section>
+
+        <section>
+
+            <h2>Мои долги</h2>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Название</th>
+                        <th>Сумма</th>
+                        <th>Ставка</th>
+                        <th>Статус</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="debtsTable">
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
