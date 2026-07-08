@@ -51,6 +51,7 @@ function render() {
     document.getElementById("paidDebt").textContent = formatMoney(paidTotal);
     document.getElementById("remainingDebt").textContent = formatMoney(remainingTotal);
     document.getElementById("progressFill").style.width = progressPercent + "%";
+    document.getElementById("progressLabel").textContent = progressPercent >= 10 ? progressPercent + "%" : "";
 
     const activeDebts = state.debts.filter(d => d.amount > 0);
     const goal = activeDebts[0];
@@ -118,6 +119,37 @@ function closePayModal() {
     currentDebtId = null;
 }
 
+const motivationPhrases = [
+    "Отличное начало! Каждый платёж приближает тебя к свободе 💪",
+    "Так держать! Долг становится всё меньше 🎯",
+    "Красавица! Ещё один шаг к финансовой свободе ✨",
+    "Прогресс есть прогресс — гордись собой 👏",
+    "Отлично! Ты снова сделала шаг вперёд 🚀"
+];
+
+const milestonePhrases = {
+    25: "🎉 Четверть пути пройдена! Ты справляешься отлично.",
+    50: "🔥 Половина долгов позади! Это уже серьёзный результат.",
+    75: "💎 Осталась всего четверть — финал уже близко!",
+    100: "🏆 Все долги закрыты! Ты дошла до финансовой свободы!"
+};
+
+function getTotalProgress() {
+    const remainingTotal = state.debts.reduce((sum, d) => sum + d.amount, 0);
+    const paidTotal = originalTotal - remainingTotal;
+    return originalTotal > 0 ? Math.round((paidTotal / originalTotal) * 100) : 0;
+}
+
+function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.remove("hidden");
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(() => {
+        toast.classList.add("hidden");
+    }, 4000);
+}
+
 function confirmPayment() {
     const input = document.getElementById("paymentInput");
     const amount = Number(input.value);
@@ -129,6 +161,8 @@ function confirmPayment() {
 
     const debt = state.debts.find(d => d.id === currentDebtId);
     if (!debt) return;
+
+    const progressBefore = getTotalProgress();
 
     const paidAmount = Math.min(amount, debt.amount);
     debt.amount -= paidAmount;
@@ -143,6 +177,18 @@ function confirmPayment() {
     saveState();
     closePayModal();
     render();
+
+    const progressAfter = getTotalProgress();
+    const crossedMilestone = [25, 50, 75, 100].find(
+        m => progressBefore < m && progressAfter >= m
+    );
+
+    if (crossedMilestone) {
+        showToast(milestonePhrases[crossedMilestone]);
+    } else {
+        const phrase = motivationPhrases[Math.floor(Math.random() * motivationPhrases.length)];
+        showToast(`Долг уменьшился на ${formatMoney(paidAmount)}. ${phrase}`);
+    }
 }
 
 function undoLastPayment() {
