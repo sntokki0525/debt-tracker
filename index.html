@@ -57,17 +57,19 @@
 </section>
     </div>
 
-<div id="payModal" class="modal-overlay hidden">
-        <div class="modal">
-            <h3 id="modalDebtName"></h3>
-            <p>Введите сумму платежа</p>
-            <input type="number" id="paymentInput" placeholder="10000">
-            <div class="modal-buttons">
-                <button id="cancelPay" class="btn-secondary">Отмена</button>
-                <button id="confirmPay" class="btn-primary">Оплатить</button>
-            </div>
+<div id="addDebtModal" class="modal-overlay hidden">
+    <div class="modal">
+        <h3>Новый долг</h3>
+        <input type="text" id="newDebtName" placeholder="Название (например, Тинькофф)">
+        <input type="number" id="newDebtAmount" placeholder="Сумма долга">
+        <input type="number" id="newDebtRate" placeholder="Ставка, % (необязательно)">
+        <input type="text" id="newDebtDeadline" placeholder="Дедлайн, например 31 августа (необязательно)">
+        <div class="modal-buttons">
+            <button id="cancelAddDebt" class="btn-secondary">Отмена</button>
+            <button id="confirmAddDebt" class="btn-primary">Добавить</button>
         </div>
     </div>
+</div>
 
     <div id="toast" class="toast hidden"></div>
 
