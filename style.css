@@ -390,3 +390,57 @@ h2 {
     margin-bottom: 35px;
     height: 320px;
 }
+
+/* Мобильная адаптация */
+@media (max-width: 600px) {
+    .container {
+        padding: 14px;
+        margin: 20px auto;
+    }
+    header h1 {
+        font-size: 28px;
+    }
+    header p {
+        font-size: 14px;
+    }
+    .theme-toggle {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    .card {
+        padding: 18px;
+    }
+    .card span {
+        font-size: 24px;
+    }
+    .summary {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        margin-bottom: 28px;
+    }
+    #debtsContainer {
+        grid-template-columns: 1fr;
+    }
+    .section-header, .history-header {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .add-btn, .undo-btn {
+        width: 100%;
+    }
+    .chart-card {
+        height: 220px;
+        padding: 16px;
+    }
+    .modal {
+        padding: 22px;
+        width: 92%;
+    }
+    .goal-card {
+        padding: 18px;
+    }
+    .debt-card {
+        padding: 16px;
+    }
+}
