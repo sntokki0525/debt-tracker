@@ -281,3 +281,42 @@ h2 {
     background: var(--accent);
     color: white;
 }
+
+/* Процент на прогресс-баре */
+.progress-fill {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+.progress-label {
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    padding-right: 8px;
+    white-space: nowrap;
+}
+
+/* Всплывающее уведомление */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
+    background: var(--card-bg);
+    color: var(--text);
+    padding: 16px 24px;
+    border-radius: 14px;
+    box-shadow: 0 8px 25px rgba(0,0,0,.25);
+    max-width: 90%;
+    text-align: center;
+    font-size: 15px;
+    z-index: 1000;
+    transition: opacity .3s ease, transform .3s ease;
+    border-left: 4px solid var(--accent);
+}
+.toast.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(20px);
+}
