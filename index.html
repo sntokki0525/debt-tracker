@@ -4,64 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Debt Tracker</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
     <div class="container">
-
         <header>
             <h1>💸 Debt Tracker</h1>
             <p>Мой путь к финансовой свободе</p>
         </header>
-
         <section class="summary">
-
             <div class="card">
                 <h3>Общий долг</h3>
                 <span id="totalDebt">0 ₽</span>
             </div>
-
             <div class="card">
                 <h3>Закрыто</h3>
                 <span id="paidDebt">0 ₽</span>
             </div>
-
             <div class="card">
                 <h3>Осталось</h3>
                 <span id="remainingDebt">0 ₽</span>
             </div>
-
         </section>
 
-<section>
+        <section>
+            <h2>🎯 Следующая цель</h2>
+            <div class="goal-card">
+                <h3 id="goalName"></h3>
+                <p id="goalText"></p>
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
+            </div>
+        </section>
 
-    <h2>🎯 Следующая цель</h2>
+        <section>
+            <h2>💳 Мои долги</h2>
+            <div id="debtsContainer"></div>
+        </section>
 
-    <div class="goal-card">
-        <h3 id="goalName"></h3>
-        <p id="goalText"></p>
+        <section>
+            <h2>🧾 История платежей</h2>
+            <div id="historyContainer"></div>
+        </section>
+    </div>
 
-        <div class="progress-bar">
-            <div id="progressFill" class="progress-fill"></div>
+    <div id="payModal" class="modal-overlay hidden">
+        <div class="modal">
+            <h3 id="modalDebtName"></h3>
+            <p>Введите сумму платежа</p>
+            <input type="number" id="paymentInput" placeholder="10000">
+            <div class="modal-buttons">
+                <button id="cancelPay" class="btn-secondary">Отмена</button>
+                <button id="confirmPay" class="btn-primary">Оплатить</button>
+            </div>
         </div>
     </div>
 
-</section>
-
-<section>
-
-    <h2>💳 Мои долги</h2>
-
-    <div id="debtsContainer"></div>
-
-</section>
-
-    </div>
-
     <script src="script.js"></script>
-
 </body>
 </html>
