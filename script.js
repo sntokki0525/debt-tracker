@@ -169,4 +169,27 @@ document.getElementById("paymentInput").addEventListener("keydown", (e) => {
 });
 document.getElementById("undoBtn").addEventListener("click", undoLastPayment);
 
+const THEME_KEY = "debtTrackerTheme";
+const themeToggle = document.getElementById("themeToggle");
+
+function applyTheme(theme) {
+    if (theme === "dark") {
+        document.body.classList.add("dark");
+        themeToggle.textContent = "☀️";
+    } else {
+        document.body.classList.remove("dark");
+        themeToggle.textContent = "🌙";
+    }
+}
+
+function toggleTheme() {
+    const isDark = document.body.classList.contains("dark");
+    const newTheme = isDark ? "light" : "dark";
+    localStorage.setItem(THEME_KEY, newTheme);
+    applyTheme(newTheme);
+}
+
+applyTheme(localStorage.getItem(THEME_KEY) || "light");
+themeToggle.addEventListener("click", toggleTheme);
+
 render();
