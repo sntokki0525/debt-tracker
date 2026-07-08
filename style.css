@@ -199,3 +199,26 @@ h2 {
     background: #4f7cff;
     color: white;
 }
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+.history-header h2 {
+    margin-bottom: 0;
+}
+.undo-btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 12px;
+    background: #eee;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+    transition: .2s;
+}
+.undo-btn:hover {
+    background: #e0455c;
+    color: white;
+}
