@@ -1,16 +1,24 @@
+// ================================
+// 🌱 Debt Tracker Configuration
+// ================================
+
 const CONFIG_KEY = "debtTrackerConfig";
 
 const DEFAULT_CONFIG = {
+
+    // Доходы
     salary: 80000,
     averageAdvance: 38000,
     averageSalary: 42000,
     quarterlyBonus: 37000,
 
+    // Даты выплат
     salaryDay: 10,
     advanceDay: 25,
-    creditDay: 26,
+    creditPaymentDay: 26,
 
-    fixedExpenses: {
+    // Обязательные расходы
+    expenses: {
         utilities: 3500,
         internet: 2000,
         transport: 4000,
@@ -21,10 +29,24 @@ const DEFAULT_CONFIG = {
         household: 1000
     },
 
+    // Финансовая подушка
+    emergencyFundGoal: 50000,
+
+    // Резерв на кредиты
     reserve: 45500
+
 };
 
+// ================================
+
+function saveConfig(config) {
+    localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+}
+
+// ================================
+
 function loadConfig() {
+
     const saved = localStorage.getItem(CONFIG_KEY);
 
     if (!saved) {
@@ -34,14 +56,13 @@ function loadConfig() {
 
     try {
         return JSON.parse(saved);
-    } catch {
+    } catch (e) {
         saveConfig(DEFAULT_CONFIG);
         return structuredClone(DEFAULT_CONFIG);
     }
+
 }
 
-function saveConfig(config) {
-    localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
-}
+// ================================
 
-let config = loadConfig();
+const config = loadConfig();
