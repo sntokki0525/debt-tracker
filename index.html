@@ -10,7 +10,7 @@
     <div class="container">
         <header>
             <button id="themeToggle" class="theme-toggle">🌙</button>
-            <h1>💸 Debt Tracker</h1>
+            <h1>💸 Money Tracker</h1>
             <p>Мой путь к финансовой свободе</p>
         </header>
 
@@ -114,14 +114,28 @@
         </div>
     </div>
 
+    <div id="editDebtModal" class="modal-overlay hidden">
+        <div class="modal">
+            <h3>Редактировать долг</h3>
+            <input type="text" id="editDebtName" placeholder="Название">
+            <input type="number" id="editDebtAmount" placeholder="Текущий остаток">
+            <input type="number" id="editDebtRate" placeholder="Ставка, % (необязательно)">
+            <input type="text" id="editDebtDeadline" placeholder="Дедлайн (необязательно)">
+            <div class="modal-buttons">
+                <button id="cancelEditDebt" class="btn-secondary">Отмена</button>
+                <button id="confirmEditDebt" class="btn-primary">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
     <div id="cashFlowModal" class="modal-overlay hidden">
         <div class="modal">
             <h3>Настройка денежного потока</h3>
             <input type="number" id="cfBalance" placeholder="Сколько денег сейчас на счету">
             <input type="number" id="cfSalaryAmount1" placeholder="Сумма 1-й выплаты (10 число)">
-<input type="number" id="cfSalaryDay1" placeholder="Число месяца (обычно 10)" min="1" max="31" value="10">
-<input type="number" id="cfSalaryAmount2" placeholder="Сумма 2-й выплаты (25 число)">
-<input type="number" id="cfSalaryDay2" placeholder="Число месяца (обычно 25)" min="1" max="31" value="25">
+            <input type="number" id="cfSalaryDay1" placeholder="Число месяца (обычно 10)" min="1" max="31" value="10">
+            <input type="number" id="cfSalaryAmount2" placeholder="Сумма 2-й выплаты (25 число)">
+            <input type="number" id="cfSalaryDay2" placeholder="Число месяца (обычно 25)" min="1" max="31" value="25">
             <input type="number" id="cfExpenses" placeholder="Обязательные траты до зарплаты">
             <input type="number" id="cfReserve" placeholder="Неприкосновенный резерв (необязательно)">
             <div class="modal-buttons">
