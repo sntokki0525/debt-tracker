@@ -391,6 +391,32 @@ h2 {
     height: 320px;
 }
 
+/* Планировщик денежных потоков */
+.cashflow-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+.cashflow-status {
+    padding: 16px 20px;
+    border-radius: 14px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 35px;
+}
+.cashflow-status.ok {
+    background: rgba(46, 204, 113, .15);
+    color: #1e8e4f;
+}
+body.dark .cashflow-status.ok {
+    color: #4ade80;
+}
+.cashflow-status.warning {
+    background: rgba(224, 69, 92, .15);
+    color: var(--danger);
+}
+
 /* Мобильная адаптация */
 @media (max-width: 600px) {
     .container {
@@ -418,6 +444,9 @@ h2 {
         grid-template-columns: 1fr;
         gap: 14px;
         margin-bottom: 28px;
+    }
+    .cashflow-grid {
+        grid-template-columns: 1fr;
     }
     #debtsContainer {
         grid-template-columns: 1fr;
