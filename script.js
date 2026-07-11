@@ -353,7 +353,7 @@ function confirmAddDebt() {
         amount,
         originalAmount: amount,
         rate,
-        deadline: deadline || undefined
+        deadline: deadline || ""
     });
 
     saveState();
@@ -414,7 +414,7 @@ function confirmEditDebt() {
     debt.amount = newAmount;
     debt.name = name;
     debt.rate = rate;
-    debt.deadline = deadline || undefined;
+    debt.deadline = deadline || "";
 
     saveState();
     closeEditDebtModal();
