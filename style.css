@@ -409,6 +409,66 @@ h2 {
     height: 320px;
 }
 
+/* Экран входа */
+.login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    padding: 20px;
+}
+.login-card {
+    background: var(--card-bg);
+    border-radius: 18px;
+    padding: 32px;
+    box-shadow: var(--shadow);
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+}
+.login-card h1 {
+    margin-bottom: 8px;
+}
+.login-card p {
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+.login-card input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--input-border);
+    border-radius: 12px;
+    font-size: 15px;
+    margin-bottom: 12px;
+    background: var(--card-bg);
+    color: var(--text);
+}
+.login-error {
+    color: var(--danger);
+    margin-top: 12px;
+    font-size: 14px;
+}
+
+/* Кнопка выхода */
+.logout-btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: none;
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+    border-radius: 50%;
+    width: 46px;
+    height: 46px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: transform .2s ease;
+}
+.logout-btn:hover {
+    transform: scale(1.08);
+}
+
 /* Планировщик денежных потоков */
 .cashflow-grid {
     display: grid;
