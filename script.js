@@ -92,6 +92,7 @@ function render() {
         card.className = "debt-card" + (debt.amount <= 0 ? " closed" : "");
         card.innerHTML = `
             <button class="delete-btn" onclick="deleteDebt('${debt.id}')" title="Удалить долг">✕</button>
+            <button class="edit-btn" onclick="openEditDebtModal('${debt.id}')" title="Редактировать долг">✏️</button>
             <h3>${debt.name} ${debt.amount <= 0 ? "✅" : ""}</h3>
             <p><strong>Остаток:</strong> ${formatMoney(debt.amount)}</p>
             <p><strong>Ставка:</strong> ${debt.rate}%</p>
@@ -356,6 +357,57 @@ function deleteDebt(id) {
     render();
 }
 
+let editingDebtId = null;
+
+function openEditDebtModal(id) {
+    const debt = state.debts.find(d => d.id === id);
+    if (!debt) return;
+
+    editingDebtId = id;
+    document.getElementById("editDebtName").value = debt.name;
+    document.getElementById("editDebtAmount").value = debt.amount;
+    document.getElementById("editDebtRate").value = debt.rate || "";
+    document.getElementById("editDebtDeadline").value = debt.deadline || "";
+    document.getElementById("editDebtModal").classList.remove("hidden");
+}
+
+function closeEditDebtModal() {
+    document.getElementById("editDebtModal").classList.add("hidden");
+    editingDebtId = null;
+}
+
+function confirmEditDebt() {
+    const debt = state.debts.find(d => d.id === editingDebtId);
+    if (!debt) return;
+
+    const name = document.getElementById("editDebtName").value.trim();
+    const newAmount = Number(document.getElementById("editDebtAmount").value);
+    const rate = Number(document.getElementById("editDebtRate").value) || 0;
+    const deadline = document.getElementById("editDebtDeadline").value.trim();
+
+    if (!name) {
+        alert("Введите название долга");
+        return;
+    }
+    if (newAmount === "" || isNaN(newAmount) || newAmount < 0) {
+        alert("Введите корректный остаток долга");
+        return;
+    }
+
+    // Сдвигаем originalAmount на ту же разницу, чтобы прогресс остался корректным
+    const delta = newAmount - debt.amount;
+    debt.originalAmount += delta;
+    debt.amount = newAmount;
+    debt.name = name;
+    debt.rate = rate;
+    debt.deadline = deadline || undefined;
+
+    saveState();
+    closeEditDebtModal();
+    render();
+    showToast(`Долг «${name}» обновлён`);
+}
+
 document.getElementById("cancelPay").addEventListener("click", closePayModal);
 document.getElementById("confirmPay").addEventListener("click", confirmPayment);
 document.getElementById("payModal").addEventListener("click", (e) => {
@@ -371,6 +423,12 @@ document.getElementById("cancelAddDebt").addEventListener("click", closeAddDebtM
 document.getElementById("confirmAddDebt").addEventListener("click", confirmAddDebt);
 document.getElementById("addDebtModal").addEventListener("click", (e) => {
     if (e.target.id === "addDebtModal") closeAddDebtModal();
+});
+
+document.getElementById("cancelEditDebt").addEventListener("click", closeEditDebtModal);
+document.getElementById("confirmEditDebt").addEventListener("click", confirmEditDebt);
+document.getElementById("editDebtModal").addEventListener("click", (e) => {
+    if (e.target.id === "editDebtModal") closeEditDebtModal();
 });
 
 const THEME_KEY = "debtTrackerTheme";
