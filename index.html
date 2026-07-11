@@ -7,147 +7,162 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <button id="themeToggle" class="theme-toggle">🌙</button>
-            <h1>💸 Money Tracker</h1>
-            <p>Мой путь к финансовой свободе</p>
-        </header>
 
-        <section>
-            <div class="section-header">
-                <h2>💰 Планировщик денежных потоков</h2>
-                <button id="cashFlowSettingsBtn" class="add-btn">⚙️ Настроить</button>
-            </div>
-            <div class="cashflow-grid">
-                <div class="card">
-                    <h3>💳 Сейчас на счету</h3>
-                    <span id="currentBalanceDisplay">0 ₽</span>
-                </div>
-                <div class="card">
-                    <h3>📅 До зарплаты</h3>
-                    <span id="daysUntilSalaryDisplay">—</span>
-                </div>
-                <div class="card">
-                    <h3>💸 Обязательные траты</h3>
-                    <span id="expensesDisplay">0 ₽</span>
-                </div>
-                <div class="card">
-                    <h3>🟢 Можно тратить без риска</h3>
-                    <span id="availableDisplay">0 ₽</span>
-                </div>
-            </div>
-            <div id="cashflowStatus" class="cashflow-status"></div>
-        </section>
+    <div id="loginScreen" class="login-screen">
+        <div class="login-card">
+            <h1>💸 Debt Tracker</h1>
+            <p>Войди, чтобы увидеть свои данные</p>
+            <input type="email" id="loginEmail" placeholder="Email">
+            <input type="password" id="loginPassword" placeholder="Пароль">
+            <button id="loginBtn" class="btn-primary" style="width:100%">Войти</button>
+            <p id="loginError" class="login-error hidden"></p>
+        </div>
+    </div>
 
-        <section class="summary">
-            <div class="card">
-                <h3>Общий долг</h3>
-                <span id="totalDebt">0 ₽</span>
-            </div>
-            <div class="card">
-                <h3>Закрыто</h3>
-                <span id="paidDebt">0 ₽</span>
-            </div>
-            <div class="card">
-                <h3>Осталось</h3>
-                <span id="remainingDebt">0 ₽</span>
-            </div>
-        </section>
-        <section>
-            <h2>🎯 Следующая цель</h2>
-            <div class="goal-card">
-                <h3 id="goalName"></h3>
-                <p id="goalText"></p>
-                <div class="progress-bar">
-                    <div id="progressFill" class="progress-fill">
-                        <span id="progressLabel" class="progress-label"></span>
+    <div id="appContainer" class="hidden">
+        <div class="container">
+            <header>
+                <button id="logoutBtn" class="logout-btn" title="Выйти">🚪</button>
+                <button id="themeToggle" class="theme-toggle">🌙</button>
+                <h1>💸 Debt Tracker</h1>
+                <p>Мой путь к финансовой свободе</p>
+            </header>
+
+            <section>
+                <div class="section-header">
+                    <h2>💰 Планировщик денежных потоков</h2>
+                    <button id="cashFlowSettingsBtn" class="add-btn">⚙️ Настроить</button>
+                </div>
+                <div class="cashflow-grid">
+                    <div class="card">
+                        <h3>💳 Сейчас на счету</h3>
+                        <span id="currentBalanceDisplay">0 ₽</span>
+                    </div>
+                    <div class="card">
+                        <h3>📅 До зарплаты</h3>
+                        <span id="daysUntilSalaryDisplay">—</span>
+                    </div>
+                    <div class="card">
+                        <h3>💸 Обязательные траты</h3>
+                        <span id="expensesDisplay">0 ₽</span>
+                    </div>
+                    <div class="card">
+                        <h3>🟢 Можно тратить без риска</h3>
+                        <span id="availableDisplay">0 ₽</span>
                     </div>
                 </div>
-            </div>
-        </section>
-        <section>
-            <div class="section-header">
-                <h2>💳 Мои долги</h2>
-                <button id="addDebtBtn" class="add-btn">+ Добавить долг</button>
-            </div>
-            <div id="debtsContainer"></div>
-        </section>
-        <section>
-            <h2>📊 График снижения долга</h2>
-            <div class="chart-card">
-                <canvas id="debtChart"></canvas>
-            </div>
-        </section>
-        <section>
-            <div class="history-header">
-                <h2>🧾 История платежей</h2>
-                <button id="undoBtn" class="undo-btn hidden">↩️ Отменить последний платёж</button>
-            </div>
-            <div id="historyContainer"></div>
-        </section>
-    </div>
+                <div id="cashflowStatus" class="cashflow-status"></div>
+            </section>
 
-    <div id="payModal" class="modal-overlay hidden">
-        <div class="modal">
-            <h3 id="modalDebtName"></h3>
-            <p>Введите сумму платежа</p>
-            <input type="number" id="paymentInput" placeholder="10000">
-            <div class="modal-buttons">
-                <button id="cancelPay" class="btn-secondary">Отмена</button>
-                <button id="confirmPay" class="btn-primary">Оплатить</button>
+            <section class="summary">
+                <div class="card">
+                    <h3>Общий долг</h3>
+                    <span id="totalDebt">0 ₽</span>
+                </div>
+                <div class="card">
+                    <h3>Закрыто</h3>
+                    <span id="paidDebt">0 ₽</span>
+                </div>
+                <div class="card">
+                    <h3>Осталось</h3>
+                    <span id="remainingDebt">0 ₽</span>
+                </div>
+            </section>
+            <section>
+                <h2>🎯 Следующая цель</h2>
+                <div class="goal-card">
+                    <h3 id="goalName"></h3>
+                    <p id="goalText"></p>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill">
+                            <span id="progressLabel" class="progress-label"></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <div class="section-header">
+                    <h2>💳 Мои долги</h2>
+                    <button id="addDebtBtn" class="add-btn">+ Добавить долг</button>
+                </div>
+                <div id="debtsContainer"></div>
+            </section>
+            <section>
+                <h2>📊 График снижения долга</h2>
+                <div class="chart-card">
+                    <canvas id="debtChart"></canvas>
+                </div>
+            </section>
+            <section>
+                <div class="history-header">
+                    <h2>🧾 История платежей</h2>
+                    <button id="undoBtn" class="undo-btn hidden">↩️ Отменить последний платёж</button>
+                </div>
+                <div id="historyContainer"></div>
+            </section>
+        </div>
+
+        <div id="payModal" class="modal-overlay hidden">
+            <div class="modal">
+                <h3 id="modalDebtName"></h3>
+                <p>Введите сумму платежа</p>
+                <input type="number" id="paymentInput" placeholder="10000">
+                <div class="modal-buttons">
+                    <button id="cancelPay" class="btn-secondary">Отмена</button>
+                    <button id="confirmPay" class="btn-primary">Оплатить</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="addDebtModal" class="modal-overlay hidden">
-        <div class="modal">
-            <h3>Новый долг</h3>
-            <input type="text" id="newDebtName" placeholder="Название (например, Тинькофф)">
-            <input type="number" id="newDebtAmount" placeholder="Сумма долга">
-            <input type="number" id="newDebtRate" placeholder="Ставка, % (необязательно)">
-            <input type="text" id="newDebtDeadline" placeholder="Дедлайн, например 31 августа (необязательно)">
-            <div class="modal-buttons">
-                <button id="cancelAddDebt" class="btn-secondary">Отмена</button>
-                <button id="confirmAddDebt" class="btn-primary">Добавить</button>
+        <div id="addDebtModal" class="modal-overlay hidden">
+            <div class="modal">
+                <h3>Новый долг</h3>
+                <input type="text" id="newDebtName" placeholder="Название (например, Тинькофф)">
+                <input type="number" id="newDebtAmount" placeholder="Сумма долга">
+                <input type="number" id="newDebtRate" placeholder="Ставка, % (необязательно)">
+                <input type="text" id="newDebtDeadline" placeholder="Дедлайн, например 31 августа (необязательно)">
+                <div class="modal-buttons">
+                    <button id="cancelAddDebt" class="btn-secondary">Отмена</button>
+                    <button id="confirmAddDebt" class="btn-primary">Добавить</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="editDebtModal" class="modal-overlay hidden">
-        <div class="modal">
-            <h3>Редактировать долг</h3>
-            <input type="text" id="editDebtName" placeholder="Название">
-            <input type="number" id="editDebtAmount" placeholder="Текущий остаток">
-            <input type="number" id="editDebtRate" placeholder="Ставка, % (необязательно)">
-            <input type="text" id="editDebtDeadline" placeholder="Дедлайн (необязательно)">
-            <div class="modal-buttons">
-                <button id="cancelEditDebt" class="btn-secondary">Отмена</button>
-                <button id="confirmEditDebt" class="btn-primary">Сохранить</button>
+        <div id="editDebtModal" class="modal-overlay hidden">
+            <div class="modal">
+                <h3>Редактировать долг</h3>
+                <input type="text" id="editDebtName" placeholder="Название">
+                <input type="number" id="editDebtAmount" placeholder="Текущий остаток">
+                <input type="number" id="editDebtRate" placeholder="Ставка, % (необязательно)">
+                <input type="text" id="editDebtDeadline" placeholder="Дедлайн (необязательно)">
+                <div class="modal-buttons">
+                    <button id="cancelEditDebt" class="btn-secondary">Отмена</button>
+                    <button id="confirmEditDebt" class="btn-primary">Сохранить</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="cashFlowModal" class="modal-overlay hidden">
-        <div class="modal">
-            <h3>Настройка денежного потока</h3>
-            <input type="number" id="cfBalance" placeholder="Сколько денег сейчас на счету">
-            <input type="number" id="cfSalaryAmount1" placeholder="Сумма 1-й выплаты (10 число)">
-            <input type="number" id="cfSalaryDay1" placeholder="Число месяца (обычно 10)" min="1" max="31" value="10">
-            <input type="number" id="cfSalaryAmount2" placeholder="Сумма 2-й выплаты (25 число)">
-            <input type="number" id="cfSalaryDay2" placeholder="Число месяца (обычно 25)" min="1" max="31" value="25">
-            <input type="number" id="cfExpenses" placeholder="Обязательные траты до зарплаты">
-            <input type="number" id="cfReserve" placeholder="Неприкосновенный резерв (необязательно)">
-            <div class="modal-buttons">
-                <button id="cancelCashFlow" class="btn-secondary">Отмена</button>
-                <button id="confirmCashFlow" class="btn-primary">Сохранить</button>
+        <div id="cashFlowModal" class="modal-overlay hidden">
+            <div class="modal">
+                <h3>Настройка денежного потока</h3>
+                <input type="number" id="cfBalance" placeholder="Сколько денег сейчас на счету">
+                <input type="number" id="cfSalaryAmount1" placeholder="Сумма 1-й выплаты (10 число)">
+                <input type="number" id="cfSalaryDay1" placeholder="Число месяца (обычно 10)" min="1" max="31" value="10">
+                <input type="number" id="cfSalaryAmount2" placeholder="Сумма 2-й выплаты (25 число)">
+                <input type="number" id="cfSalaryDay2" placeholder="Число месяца (обычно 25)" min="1" max="31" value="25">
+                <input type="number" id="cfExpenses" placeholder="Обязательные траты до зарплаты">
+                <input type="number" id="cfReserve" placeholder="Неприкосновенный резерв (необязательно)">
+                <div class="modal-buttons">
+                    <button id="cancelCashFlow" class="btn-secondary">Отмена</button>
+                    <button id="confirmCashFlow" class="btn-primary">Сохранить</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="toast" class="toast hidden"></div>
+        <div id="toast" class="toast hidden"></div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
