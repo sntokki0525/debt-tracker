@@ -368,6 +368,24 @@ h2 {
     background: var(--danger);
     color: white;
 }
+.edit-btn {
+    position: absolute;
+    top: 14px;
+    right: 46px;
+    width: 26px;
+    height: 26px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-light);
+    font-size: 13px;
+    cursor: pointer;
+    transition: .2s;
+}
+.edit-btn:hover {
+    background: var(--accent);
+    color: white;
+}
 
 /* Поля ввода в модалке добавления долга */
 .modal input {
