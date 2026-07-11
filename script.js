@@ -1,38 +1,53 @@
-const STORAGE_KEY = "debtTrackerState";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+    getAuth,
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+    getFirestore,
+    doc,
+    setDoc,
+    onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyB32sChKuPuOoyh70pwYAmS6jnHb8Xf5QU",
+    authDomain: "money-tracker-870b1.firebaseapp.com",
+    projectId: "money-tracker-870b1",
+    storageBucket: "money-tracker-870b1.firebasestorage.app",
+    messagingSenderId: "641300531071",
+    appId: "1:641300531071:web:5a3e6f8792be93c5e87c4a"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
 
 const initialDebts = [
     { id: "mkb", name: "МКБ", amount: 130000, originalAmount: 130000, rate: 59, deadline: "31 июля" },
-    { id: "sber", name: "Сбер", amount: 70000, originalAmount: 70000, rate: 0, deadline: "31 августа" },
+    { id: "sber", name: "Сбер", amount: 70000, originalAmount: 70000, rate: 26, deadline: "31 августа" },
     { id: "credit62", name: "Кредит 62%", amount: 20000, originalAmount: 20000, rate: 62 },
     { id: "credit59", name: "Кредит 59%", amount: 20000, originalAmount: 20000, rate: 59 }
 ];
 
-function loadState() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-        try {
-            const parsed = JSON.parse(saved);
-            parsed.debts.forEach(d => {
-                if (d.originalAmount === undefined) d.originalAmount = d.amount;
-            });
-            return parsed;
-        } catch (e) {
-            console.error("Ошибка чтения сохранённых данных", e);
-        }
-    }
-    return {
-        debts: initialDebts.map(d => ({ ...d })),
-        payments: []
-    };
-}
+const defaultCashFlow = {
+    balance: 0,
+    salaryAmount1: 0,
+    salaryDay1: 10,
+    salaryAmount2: 0,
+    salaryDay2: 25,
+    expenses: 0,
+    reserve: 0
+};
 
-function saveState() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-
-let state = loadState();
+let state = { debts: [], payments: [] };
+let cashFlowConfig = { ...defaultCashFlow };
 let currentDebtId = null;
+let editingDebtId = null;
 let debtChartInstance = null;
+let userDocRef = null;
 
 function formatMoney(value) {
     return Math.round(value).toLocaleString("ru-RU") + " ₽";
@@ -51,6 +66,16 @@ function getTotalProgress() {
     const remainingTotal = state.debts.reduce((sum, d) => sum + d.amount, 0);
     const paidTotal = originalTotal - remainingTotal;
     return originalTotal > 0 ? Math.round((paidTotal / originalTotal) * 100) : 0;
+}
+
+function saveState() {
+    if (!userDocRef) return;
+    setDoc(userDocRef, { debts: state.debts, payments: state.payments }, { merge: true });
+}
+
+function saveCashFlowConfig() {
+    if (!userDocRef) return;
+    setDoc(userDocRef, { cashFlow: cashFlowConfig }, { merge: true });
 }
 
 function render() {
@@ -91,13 +116,13 @@ function render() {
         const card = document.createElement("div");
         card.className = "debt-card" + (debt.amount <= 0 ? " closed" : "");
         card.innerHTML = `
-            <button class="delete-btn" onclick="deleteDebt('${debt.id}')" title="Удалить долг">✕</button>
-            <button class="edit-btn" onclick="openEditDebtModal('${debt.id}')" title="Редактировать долг">✏️</button>
+            <button class="delete-btn" onclick="window.deleteDebt('${debt.id}')" title="Удалить долг">✕</button>
+            <button class="edit-btn" onclick="window.openEditDebtModal('${debt.id}')" title="Редактировать долг">✏️</button>
             <h3>${debt.name} ${debt.amount <= 0 ? "✅" : ""}</h3>
             <p><strong>Остаток:</strong> ${formatMoney(debt.amount)}</p>
             <p><strong>Ставка:</strong> ${debt.rate}%</p>
             ${debt.amount > 0
-                ? `<button class="pay-btn" onclick="openPayModal('${debt.id}')">💸 Внести платеж</button>`
+                ? `<button class="pay-btn" onclick="window.openPayModal('${debt.id}')">💸 Внести платеж</button>`
                 : `<p class="closed-label">Долг закрыт</p>`}
         `;
         container.appendChild(card);
@@ -152,20 +177,12 @@ function renderChart() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
+            plugins: { legend: { display: false } },
             scales: {
-                x: {
-                    grid: { color: gridColor },
-                    ticks: { color: textColor }
-                },
+                x: { grid: { color: gridColor }, ticks: { color: textColor } },
                 y: {
                     grid: { color: gridColor },
-                    ticks: {
-                        color: textColor,
-                        callback: value => formatMoney(value)
-                    }
+                    ticks: { color: textColor, callback: value => formatMoney(value) }
                 }
             }
         }
@@ -357,8 +374,6 @@ function deleteDebt(id) {
     render();
 }
 
-let editingDebtId = null;
-
 function openEditDebtModal(id) {
     const debt = state.debts.find(d => d.id === id);
     if (!debt) return;
@@ -389,12 +404,11 @@ function confirmEditDebt() {
         alert("Введите название долга");
         return;
     }
-    if (newAmount === "" || isNaN(newAmount) || newAmount < 0) {
+    if (isNaN(newAmount) || newAmount < 0) {
         alert("Введите корректный остаток долга");
         return;
     }
 
-    // Сдвигаем originalAmount на ту же разницу, чтобы прогресс остался корректным
     const delta = newAmount - debt.amount;
     debt.originalAmount += delta;
     debt.amount = newAmount;
@@ -456,33 +470,6 @@ applyTheme(localStorage.getItem(THEME_KEY) || "light");
 themeToggle.addEventListener("click", toggleTheme);
 
 // ===== Планировщик денежных потоков =====
-const CASHFLOW_KEY = "debtTrackerCashFlow";
-
-function loadCashFlowConfig() {
-    const saved = localStorage.getItem(CASHFLOW_KEY);
-    if (saved) {
-        try {
-            return JSON.parse(saved);
-        } catch (e) {
-            console.error("Ошибка чтения настроек денежного потока", e);
-        }
-    }
-    return {
-        balance: 0,
-        salaryAmount1: 0,
-        salaryDay1: 10,
-        salaryAmount2: 0,
-        salaryDay2: 25,
-        expenses: 0,
-        reserve: 0
-    };
-}
-
-function saveCashFlowConfig() {
-    localStorage.setItem(CASHFLOW_KEY, JSON.stringify(cashFlowConfig));
-}
-
-let cashFlowConfig = loadCashFlowConfig();
 
 function nextOccurrence(day, today) {
     let next = new Date(today.getFullYear(), today.getMonth(), day);
@@ -570,6 +557,68 @@ document.getElementById("cashFlowModal").addEventListener("click", (e) => {
     if (e.target.id === "cashFlowModal") closeCashFlowModal();
 });
 
-renderCashFlow();
+// ===== Авторизация и синхронизация =====
 
-render();
+function showApp() {
+    document.getElementById("loginScreen").classList.add("hidden");
+    document.getElementById("appContainer").classList.remove("hidden");
+}
+
+function showLogin() {
+    document.getElementById("loginScreen").classList.remove("hidden");
+    document.getElementById("appContainer").classList.add("hidden");
+}
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        userDocRef = doc(db, "users", user.uid);
+        showApp();
+
+        onSnapshot(userDocRef, (snap) => {
+            if (snap.exists()) {
+                const data = snap.data();
+                state.debts = data.debts || [];
+                state.payments = data.payments || [];
+                cashFlowConfig = data.cashFlow || { ...defaultCashFlow };
+            } else {
+                state = { debts: initialDebts.map(d => ({ ...d })), payments: [] };
+                cashFlowConfig = { ...defaultCashFlow };
+                setDoc(userDocRef, {
+                    debts: state.debts,
+                    payments: state.payments,
+                    cashFlow: cashFlowConfig
+                });
+            }
+            render();
+            renderCashFlow();
+        });
+    } else {
+        userDocRef = null;
+        showLogin();
+    }
+});
+
+document.getElementById("loginBtn").addEventListener("click", () => {
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    const errorEl = document.getElementById("loginError");
+    errorEl.classList.add("hidden");
+
+    signInWithEmailAndPassword(auth, email, password).catch(() => {
+        errorEl.textContent = "Неверный email или пароль";
+        errorEl.classList.remove("hidden");
+    });
+});
+
+document.getElementById("loginPassword").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") document.getElementById("loginBtn").click();
+});
+
+document.getElementById("logoutBtn").addEventListener("click", () => {
+    signOut(auth);
+});
+
+// Делаем функции доступными для onclick-атрибутов в динамически создаваемых карточках
+window.deleteDebt = deleteDebt;
+window.openEditDebtModal = openEditDebtModal;
+window.openPayModal = openPayModal;
