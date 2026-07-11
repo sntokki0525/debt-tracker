@@ -411,8 +411,10 @@ function loadCashFlowConfig() {
     }
     return {
         balance: 0,
-        salary: 0,
-        salaryDay: 1,
+        salaryAmount1: 0,
+        salaryDay1: 10,
+        salaryAmount2: 0,
+        salaryDay2: 25,
         expenses: 0,
         reserve: 0
     };
@@ -424,25 +426,37 @@ function saveCashFlowConfig() {
 
 let cashFlowConfig = loadCashFlowConfig();
 
-function getDaysUntilSalary(config) {
+function nextOccurrence(day, today) {
+    let next = new Date(today.getFullYear(), today.getMonth(), day);
+    if (next <= today) {
+        next = new Date(today.getFullYear(), today.getMonth() + 1, day);
+    }
+    return next;
+}
+
+function getNextSalary(config) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    let next = new Date(today.getFullYear(), today.getMonth(), config.salaryDay);
-    if (next <= today) {
-        next = new Date(today.getFullYear(), today.getMonth() + 1, config.salaryDay);
-    }
+    const date1 = nextOccurrence(config.salaryDay1, today);
+    const date2 = nextOccurrence(config.salaryDay2, today);
 
-    const diffMs = next - today;
-    return Math.max(0, Math.round(diffMs / (1000 * 60 * 60 * 24)));
+    const isFirstSooner = date1 <= date2;
+    const nextDate = isFirstSooner ? date1 : date2;
+    const amount = isFirstSooner ? config.salaryAmount1 : config.salaryAmount2;
+
+    const diffMs = nextDate - today;
+    const days = Math.max(0, Math.round(diffMs / (1000 * 60 * 60 * 24)));
+
+    return { days, amount };
 }
 
 function renderCashFlow() {
     const available = cashFlowConfig.balance - cashFlowConfig.expenses - cashFlowConfig.reserve;
-    const daysLeft = getDaysUntilSalary(cashFlowConfig);
+    const nextSalary = getNextSalary(cashFlowConfig);
 
     document.getElementById("currentBalanceDisplay").textContent = formatMoney(cashFlowConfig.balance);
-    document.getElementById("daysUntilSalaryDisplay").textContent = `${daysLeft} дн. (+${formatMoney(cashFlowConfig.salary)})`;
+    document.getElementById("daysUntilSalaryDisplay").textContent = `${nextSalary.days} дн. (+${formatMoney(nextSalary.amount)})`;
     document.getElementById("expensesDisplay").textContent = formatMoney(cashFlowConfig.expenses);
     document.getElementById("availableDisplay").textContent = formatMoney(Math.max(0, available));
 
@@ -458,8 +472,10 @@ function renderCashFlow() {
 
 function openCashFlowModal() {
     document.getElementById("cfBalance").value = cashFlowConfig.balance || "";
-    document.getElementById("cfSalary").value = cashFlowConfig.salary || "";
-    document.getElementById("cfSalaryDay").value = cashFlowConfig.salaryDay || "";
+    document.getElementById("cfSalaryAmount1").value = cashFlowConfig.salaryAmount1 || "";
+    document.getElementById("cfSalaryDay1").value = cashFlowConfig.salaryDay1 || 10;
+    document.getElementById("cfSalaryAmount2").value = cashFlowConfig.salaryAmount2 || "";
+    document.getElementById("cfSalaryDay2").value = cashFlowConfig.salaryDay2 || 25;
     document.getElementById("cfExpenses").value = cashFlowConfig.expenses || "";
     document.getElementById("cfReserve").value = cashFlowConfig.reserve || "";
     document.getElementById("cashFlowModal").classList.remove("hidden");
@@ -471,17 +487,19 @@ function closeCashFlowModal() {
 
 function confirmCashFlow() {
     const balance = Number(document.getElementById("cfBalance").value) || 0;
-    const salary = Number(document.getElementById("cfSalary").value) || 0;
-    const salaryDay = Number(document.getElementById("cfSalaryDay").value);
+    const salaryAmount1 = Number(document.getElementById("cfSalaryAmount1").value) || 0;
+    const salaryDay1 = Number(document.getElementById("cfSalaryDay1").value);
+    const salaryAmount2 = Number(document.getElementById("cfSalaryAmount2").value) || 0;
+    const salaryDay2 = Number(document.getElementById("cfSalaryDay2").value);
     const expenses = Number(document.getElementById("cfExpenses").value) || 0;
     const reserve = Number(document.getElementById("cfReserve").value) || 0;
 
-    if (!salaryDay || salaryDay < 1 || salaryDay > 31) {
-        alert("Введите корректное число месяца для зарплаты (от 1 до 31)");
+    if (!salaryDay1 || salaryDay1 < 1 || salaryDay1 > 31 || !salaryDay2 || salaryDay2 < 1 || salaryDay2 > 31) {
+        alert("Введите корректные числа месяца для обеих выплат (от 1 до 31)");
         return;
     }
 
-    cashFlowConfig = { balance, salary, salaryDay, expenses, reserve };
+    cashFlowConfig = { balance, salaryAmount1, salaryDay1, salaryAmount2, salaryDay2, expenses, reserve };
     saveCashFlowConfig();
     closeCashFlowModal();
     renderCashFlow();
