@@ -12,7 +12,6 @@ function loadState() {
     if (saved) {
         try {
             const parsed = JSON.parse(saved);
-            // На случай если долг сохранён ещё до появления originalAmount
             parsed.debts.forEach(d => {
                 if (d.originalAmount === undefined) d.originalAmount = d.amount;
             });
@@ -55,36 +54,17 @@ function getTotalProgress() {
 }
 
 function render() {
-    const activeDebts = state.debts.filter(d => d.amount > 0);
-const goal = activeDebts[0];
-    
     const container = document.getElementById("debtsContainer");
     container.innerHTML = "";
 
-const originalTotal = calculateOriginalDebt(state.debts);
-const remainingTotal = calculateRemainingDebt(state.debts);
-const paidTotal = calculatePaidDebt(state.debts);
-const progressPercent = calculateProgress(state.debts);
+    const originalTotal = getOriginalTotal();
+    const remainingTotal = state.debts.reduce((sum, d) => sum + d.amount, 0);
+    const paidTotal = originalTotal - remainingTotal;
+    const progressPercent = getTotalProgress();
 
     document.getElementById("totalDebt").textContent = formatMoney(originalTotal);
     document.getElementById("paidDebt").textContent = formatMoney(paidTotal);
     document.getElementById("remainingDebt").textContent = formatMoney(remainingTotal);
-    // ===== Dashboard =====
-
-document.getElementById("reservedMoney").textContent =
-    formatMoney(config.reserve);
-
-document.getElementById("daysUntilSalary").textContent =
-    getDaysUntilSalary(config) + " дн.";
-
-document.getElementById("currentTarget").textContent =
-    goal ? goal.name : "Свободна 🎉";
-
-const available =
-    calculateAvailableMoney(config.salary, config);
-
-document.getElementById("availableMoney").textContent =
-    formatMoney(available);
     document.getElementById("progressFill").style.width = progressPercent + "%";
     document.getElementById("progressLabel").textContent = progressPercent >= 10 ? progressPercent + "%" : "";
 
@@ -416,5 +396,104 @@ function toggleTheme() {
 
 applyTheme(localStorage.getItem(THEME_KEY) || "light");
 themeToggle.addEventListener("click", toggleTheme);
+
+// ===== Планировщик денежных потоков =====
+const CASHFLOW_KEY = "debtTrackerCashFlow";
+
+function loadCashFlowConfig() {
+    const saved = localStorage.getItem(CASHFLOW_KEY);
+    if (saved) {
+        try {
+            return JSON.parse(saved);
+        } catch (e) {
+            console.error("Ошибка чтения настроек денежного потока", e);
+        }
+    }
+    return {
+        balance: 0,
+        salary: 0,
+        salaryDay: 1,
+        expenses: 0,
+        reserve: 0
+    };
+}
+
+function saveCashFlowConfig() {
+    localStorage.setItem(CASHFLOW_KEY, JSON.stringify(cashFlowConfig));
+}
+
+let cashFlowConfig = loadCashFlowConfig();
+
+function getDaysUntilSalary(config) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let next = new Date(today.getFullYear(), today.getMonth(), config.salaryDay);
+    if (next <= today) {
+        next = new Date(today.getFullYear(), today.getMonth() + 1, config.salaryDay);
+    }
+
+    const diffMs = next - today;
+    return Math.max(0, Math.round(diffMs / (1000 * 60 * 60 * 24)));
+}
+
+function renderCashFlow() {
+    const available = cashFlowConfig.balance - cashFlowConfig.expenses - cashFlowConfig.reserve;
+    const daysLeft = getDaysUntilSalary(cashFlowConfig);
+
+    document.getElementById("currentBalanceDisplay").textContent = formatMoney(cashFlowConfig.balance);
+    document.getElementById("daysUntilSalaryDisplay").textContent = `${daysLeft} дн. (+${formatMoney(cashFlowConfig.salary)})`;
+    document.getElementById("expensesDisplay").textContent = formatMoney(cashFlowConfig.expenses);
+    document.getElementById("availableDisplay").textContent = formatMoney(Math.max(0, available));
+
+    const statusEl = document.getElementById("cashflowStatus");
+    if (available >= 0) {
+        statusEl.className = "cashflow-status ok";
+        statusEl.textContent = `🟢 Всё в порядке — до зарплаты хватает, ещё останется ${formatMoney(available)}`;
+    } else {
+        statusEl.className = "cashflow-status warning";
+        statusEl.textContent = `⚠️ Внимание: до зарплаты не хватает ${formatMoney(Math.abs(available))}`;
+    }
+}
+
+function openCashFlowModal() {
+    document.getElementById("cfBalance").value = cashFlowConfig.balance || "";
+    document.getElementById("cfSalary").value = cashFlowConfig.salary || "";
+    document.getElementById("cfSalaryDay").value = cashFlowConfig.salaryDay || "";
+    document.getElementById("cfExpenses").value = cashFlowConfig.expenses || "";
+    document.getElementById("cfReserve").value = cashFlowConfig.reserve || "";
+    document.getElementById("cashFlowModal").classList.remove("hidden");
+}
+
+function closeCashFlowModal() {
+    document.getElementById("cashFlowModal").classList.add("hidden");
+}
+
+function confirmCashFlow() {
+    const balance = Number(document.getElementById("cfBalance").value) || 0;
+    const salary = Number(document.getElementById("cfSalary").value) || 0;
+    const salaryDay = Number(document.getElementById("cfSalaryDay").value);
+    const expenses = Number(document.getElementById("cfExpenses").value) || 0;
+    const reserve = Number(document.getElementById("cfReserve").value) || 0;
+
+    if (!salaryDay || salaryDay < 1 || salaryDay > 31) {
+        alert("Введите корректное число месяца для зарплаты (от 1 до 31)");
+        return;
+    }
+
+    cashFlowConfig = { balance, salary, salaryDay, expenses, reserve };
+    saveCashFlowConfig();
+    closeCashFlowModal();
+    renderCashFlow();
+}
+
+document.getElementById("cashFlowSettingsBtn").addEventListener("click", openCashFlowModal);
+document.getElementById("cancelCashFlow").addEventListener("click", closeCashFlowModal);
+document.getElementById("confirmCashFlow").addEventListener("click", confirmCashFlow);
+document.getElementById("cashFlowModal").addEventListener("click", (e) => {
+    if (e.target.id === "cashFlowModal") closeCashFlowModal();
+});
+
+renderCashFlow();
 
 render();
