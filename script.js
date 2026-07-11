@@ -58,14 +58,30 @@ function render() {
     const container = document.getElementById("debtsContainer");
     container.innerHTML = "";
 
-    const originalTotal = getOriginalTotal();
-    const remainingTotal = state.debts.reduce((sum, d) => sum + d.amount, 0);
-    const paidTotal = originalTotal - remainingTotal;
-    const progressPercent = getTotalProgress();
+const originalTotal = calculateOriginalDebt(state.debts);
+const remainingTotal = calculateRemainingDebt(state.debts);
+const paidTotal = calculatePaidDebt(state.debts);
+const progressPercent = calculateProgress(state.debts);
 
     document.getElementById("totalDebt").textContent = formatMoney(originalTotal);
     document.getElementById("paidDebt").textContent = formatMoney(paidTotal);
     document.getElementById("remainingDebt").textContent = formatMoney(remainingTotal);
+    // ===== Dashboard =====
+
+document.getElementById("reservedMoney").textContent =
+    formatMoney(config.reserve);
+
+document.getElementById("daysUntilSalary").textContent =
+    getDaysUntilSalary(config) + " дн.";
+
+document.getElementById("currentTarget").textContent =
+    goal ? goal.name : "Свободна 🎉";
+
+const available =
+    calculateAvailableMoney(config.salary, config);
+
+document.getElementById("availableMoney").textContent =
+    formatMoney(available);
     document.getElementById("progressFill").style.width = progressPercent + "%";
     document.getElementById("progressLabel").textContent = progressPercent >= 10 ? progressPercent + "%" : "";
 
