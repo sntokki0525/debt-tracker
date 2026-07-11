@@ -55,23 +55,6 @@ function getTotalProgress() {
 }
 
 function render() {
-    // ===== Dashboard =====
-
-document.getElementById("reservedMoney").textContent =
-    formatMoney(config.reserve);
-
-document.getElementById("daysUntilSalary").textContent =
-    getDaysUntilSalary(config) + " дн.";
-
-document.getElementById("currentTarget").textContent =
-    goal ? goal.name : "Свободна 🎉";
-
-const available =
-    calculateAvailableMoney(config.salary, config);
-
-document.getElementById("availableMoney").textContent =
-    formatMoney(available);
-
     const activeDebts = state.debts.filter(d => d.amount > 0);
 const goal = activeDebts[0];
     
